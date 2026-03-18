@@ -18,9 +18,11 @@
   <a href="#citation-zh"><strong>[📜 引用]</strong></a>
 </p>
 
-![结果准确率 vs 理由一致性](images/overall_compare.png)
+<p align="center">
+  <img src="images/overall_compare.png" alt="Outcome Accuracy vs Rationale Consistency" width="70%">
+</p>
 
-*结果准确率 vs 理由一致性：理由一致性能够有效区分前沿模型并检测欺骗性对齐*
+<p align="center"><em>结果准确率 vs 理由一致性：理由一致性能够有效区分前沿模型并检测欺骗性对齐</em></p>
 
 </div>
 
@@ -60,9 +62,11 @@
 
 ## 📉 训练发现：仅结果监督导致理由退化
 
-![训练动态对比](images/reward_compare.png)
+<p align="center">
+  <img src="images/reward_compare.png" alt="Training Dynamics" width="70%">
+</p>
 
-*训练动态对比：结果奖励相近，但理由奖励差异显著*
+<p align="center"><em>训练动态对比：结果奖励相近，但理由奖励差异显著</em></p>
 
 上图展示了训练过程中的关键发现：**仅结果监督会导致模型与人类判别过程的一致性持续下降**。
 
@@ -106,12 +110,9 @@
 
 ```
 RationaleRM/
-├── training/                       # 奖励模型训练流水线
-│   └── train_reward_model.py       # 混合奖励训练脚本
 ├── metajudge_infer.py              # 语义匹配推理脚本
 ├── metajudge_infer.sh              # 运行推理的 Shell 脚本
 ├── metajudge_analysis.py           # 计算指标的分析脚本
-├── requirements.txt                # 项目依赖
 ├── images/                         # 图片
 │   ├── overall_compare.png
 │   └── reward_compare.png
@@ -196,19 +197,6 @@ python metajudge_analysis.py \
 python metajudge_analysis.py \
     --input-dir example/ \
     --sort-by recall
-
-### 第四步：混合奖励训练
-
-使用混合损失方法训练您自己的生成式奖励模型 (GenRM)：
-
-```bash
-python training/train_reward_model.py \
-    --model_name "Qwen/Qwen2.5-7B-Instruct" \
-    --dataset_name "Qwen/RationaleRM" \
-    --output_dir "./output/rm_training" \
-    --batch_size 4 \
-    --epochs 1 \
-    --rationale_weight 0.1
 ```
 
 输出示例：

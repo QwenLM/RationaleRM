@@ -24,11 +24,6 @@ try:
 except ImportError:
     openai = None
 
-try:
-    from tqdm import tqdm
-except ImportError:
-    tqdm = None
-
 
 # ============================================================================
 # Evaluation Prompt Template
@@ -370,18 +365,14 @@ class OpenAIInferenceEngine:
             # Collect results
             idx_results = [None] * len(deal_data)
             completed = 0
-            
-            # Wrap with tqdm if available
-            iterator = as_completed(future_to_idx)
-            if tqdm:
-                iterator = tqdm(iterator, total=len(deal_data), desc="Inferring")
-                
-            for future in iterator:
+            for future in as_completed(future_to_idx):
                 idx = future_to_idx[future]
                 try:
                     result = future.result()
                     idx_results[idx] = result
                     completed += 1
+                    if result['success']:
+                        logging.info(f"Completed {completed}/{len(deal_data)}")
                 except Exception as e:
                     idx_results[idx] = {
                         'success': False,
