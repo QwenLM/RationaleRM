@@ -17,11 +17,6 @@ from typing import List, Dict, Optional, Tuple
 from collections import defaultdict
 import numpy as np
 
-try:
-    from tqdm import tqdm
-except ImportError:
-    tqdm = None
-
 
 # ============================================================================
 # Result Extraction Module
@@ -229,12 +224,7 @@ def analyze_single_file(filepath: str, model_be_evaluated: str,
     
     model_checklist_key = f"{model_be_evaluated}-checklist"
     
-    # Wrap with tqdm if available
-    iterator = data
-    if tqdm:
-        iterator = tqdm(data, desc=f"Analyzing {model_be_evaluated}", leave=False)
-        
-    for item in iterator:
+    for item in data:
         if 'samples' not in item or len(item['samples']) == 0:
             error_count += 1
             continue
@@ -314,33 +304,29 @@ def analyze_directory(directory: str, eval_model: str = None,
     """
     results = []
     
-    files = [f for f in os.listdir(directory) if f.endswith('.jsonl')]
-    
-    # Wrap with tqdm if available
-    iterator = files
-    if tqdm:
-        iterator = tqdm(files, desc="Processing directory")
+    for filename in os.listdir(directory):
+        if not filename.endswith('.jsonl'):
+            continue
         
-    for filename in iterator:
         filepath = os.path.join(directory, filename)
         name_without_ext = filename.replace('.jsonl', '')
         
         # Try to get model name from file content
         model_be_evaluated = None
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                first_line = f.readline().strip()
-                if first_line:
-                    data = json.loads(first_line)
-                    metadata = data.get('metadata', {})
-                    # Find checklist field to infer model name
-                    for key in metadata.keys():
-                        if key.endswith('-checklist') and key != 'human-checklist':
-                            model_be_evaluated = key.replace('-checklist', '')
-                            break
-        except Exception as e:
-            print(f"Failed to read file {filename}: {e}")
-            continue
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    first_line = f.readline().strip()
+                    if first_line:
+                        data = json.loads(first_line)
+                        metadata = data.get('metadata', {})
+                        # Find checklist field to infer model name
+                        for key in metadata.keys():
+                            if key.endswith('-checklist') and key != 'human-checklist':
+                                model_be_evaluated = key.replace('-checklist', '')
+                                break
+            except Exception as e:
+                print(f"Failed to read file {filename}: {e}")
+                continue
         
         # If not found from file, use filename as model name
         if not model_be_evaluated:
@@ -354,7 +340,7 @@ def analyze_directory(directory: str, eval_model: str = None,
         if 'input' in filename.lower() and 'output' not in filename.lower():
             continue
         
-        # print(f"Analyzing file: {filename} (model: {model_be_evaluated})")  # Replaced by tqdm
+        print(f"Analyzing file: {filename} (model: {model_be_evaluated})")
         
         result = analyze_single_file(filepath, model_be_evaluated, max_checklist_len)
         if result['valid_samples'] > 0:
