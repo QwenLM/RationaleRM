@@ -1,0 +1,8 @@
+openai
+numpy
+tqdm
+transformers
+torch
+datasets
+trl
+accelerate

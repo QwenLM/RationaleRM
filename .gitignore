@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env/
+
+# Data & Output
+data/
+example/
+output/
+*.jsonl
+*.log
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store

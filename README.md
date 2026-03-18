@@ -18,11 +18,9 @@
   <a href="#citation"><strong>[📜 Citation]</strong></a>
 </p>
 
-<p align="center">
-  <img src="images/overall_compare.png" alt="Outcome Accuracy vs Rationale Consistency" width="70%">
-</p>
+![Outcome Accuracy vs Rationale Consistency](images/overall_compare.png)
 
-<p align="center"><em>Outcome Accuracy vs Rationale Consistency: Rationale Consistency effectively distinguishes frontier models and detects deceptive alignment</em></p>
+*Outcome Accuracy vs Rationale Consistency: Rationale Consistency effectively distinguishes frontier models and detects deceptive alignment*
 
 </div>
 
@@ -62,11 +60,9 @@ The most typical example is the comparison between **o3 and o3-mini**: both have
 
 ## 📉 Training Finding: Outcome-Only Supervision Leads to Rationale Degeneration
 
-<p align="center">
-  <img src="images/reward_compare.png" alt="Training Dynamics" width="70%">
-</p>
+![Training Dynamics](images/reward_compare.png)
 
-<p align="center"><em>Training dynamics comparison: Similar outcome rewards, but significantly different rationale rewards</em></p>
+*Training dynamics comparison: Similar outcome rewards, but significantly different rationale rewards*
 
 The figure above shows a key finding during training: **outcome-only supervision leads to continuous decline in model-human reasoning process consistency**.
 
@@ -110,9 +106,12 @@ We evaluate on two challenging benchmarks:
 
 ```
 RationaleRM/
+├── training/                       # Reward model training pipeline
+│   └── train_reward_model.py       # Hybrid Reward training script
 ├── metajudge_infer.py              # Semantic matching inference script
 ├── metajudge_infer.sh              # Shell script for running inference
 ├── metajudge_analysis.py           # Analysis script for computing metrics
+├── requirements.txt                # Project dependencies
 ├── images/                         # Images
 │   ├── overall_compare.png
 │   └── reward_compare.png
@@ -197,6 +196,20 @@ python metajudge_analysis.py \
 python metajudge_analysis.py \
     --input-dir example/ \
     --sort-by recall
+```
+
+### Step 4: Hybrid Reward Training
+
+Train your own Generative Reward Model (GenRM) using the Hybrid Loss approach:
+
+```bash
+python training/train_reward_model.py \
+    --model_name "Qwen/Qwen2.5-7B-Instruct" \
+    --dataset_name "Qwen/RationaleRM" \
+    --output_dir "./output/rm_training" \
+    --batch_size 4 \
+    --epochs 1 \
+    --rationale_weight 0.1
 ```
 
 Output example:
